@@ -7,10 +7,7 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "DisableSleepMenu",
-            path: "Sources/DisableSleepMenu",
-            swiftSettings: [
-                .unsafeFlags(["-parse-as-library"])
-            ]
+            path: "Sources/DisableSleepMenu"
         )
     ]
 )

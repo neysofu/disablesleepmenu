@@ -3,13 +3,18 @@ import ServiceManagement
 
 @main
 struct DisableSleepMenuApp: App {
-    @StateObject private var sleepManager = SleepManager()
+    @StateObject private var sleepManager: SleepManager
     @State private var launchAtLogin = false
+
+    init() {
+        SleepManager.runReenableHelperIfNeeded()
+        _sleepManager = StateObject(wrappedValue: SleepManager())
+    }
 
     var body: some Scene {
         MenuBarExtra {
             VStack(alignment: .leading, spacing: 4) {
-                Text(sleepManager.isDisabled ? "Sleep: Disabled" : "Sleep: Enabled")
+                Text(sleepManager.statusText)
                     .font(.headline)
 
                 Divider()
@@ -18,6 +23,18 @@ struct DisableSleepMenuApp: App {
                     sleepManager.toggle()
                 }
                 .keyboardShortcut("t")
+
+                Button("Disable for 2 Hours") {
+                    sleepManager.disableFor(hours: 2)
+                }
+
+                Button("Disable for 4 Hours") {
+                    sleepManager.disableFor(hours: 4)
+                }
+
+                Button("Disable for 8 Hours") {
+                    sleepManager.disableFor(hours: 8)
+                }
 
                 Divider()
 
@@ -35,10 +52,11 @@ struct DisableSleepMenuApp: App {
             }
             .padding(4)
             .onAppear {
+                sleepManager.refresh()
                 launchAtLogin = getLaunchAtLogin()
             }
         } label: {
-            Image(systemName: sleepManager.isDisabled ? "moon.zzz.fill" : "moon.zzz")
+            Image(systemName: sleepManager.isDisabled || sleepManager.hasTimedDisable ? "moon.zzz.fill" : "moon.zzz")
         }
     }
 
